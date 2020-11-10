@@ -36,14 +36,14 @@ class simple_quad_model:
         U[3] = F[1] + F[3] - F[2] - F[0]
         return U
 
-    def liner_acceleration(self, F):
+    def liner_acceleration(self, U):
         """
 
-        :param F: 输入力
+        :param U: 虚拟输入量
         :return: 线加速度，0，1，2：x,y,z
         """
         acc = np.zeros(3)
-        U = self.virtual_control_U(F)
+        # U = self.virtual_control_U(F)
         acc[0] = (np.cos(self.E_angel[0]) * np.sin(self.E_angel[1]) * np.cos(self.E_angel[2]) + np.sin(
             self.E_angel[0]) * np.sin(self.E_angel[2])) * U[0] / self.m
         acc[1] = (np.cos(self.E_angel[0]) * np.sin(self.E_angel[1]) * np.sin(self.E_angel[2]) - np.sin(
