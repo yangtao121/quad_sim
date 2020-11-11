@@ -117,6 +117,9 @@ class simple_quad_model:
         self.E_angel = np.random.uniform(0, np.pi / 3, 3)
         self.angel_speed = np.random.uniform(-np.pi / 4, np.pi / 4, 3)
         self.liner_speed = np.random.uniform(-5, 5, 3)
+        state = np.array([self.liner_speed,self.angel_speed,self.E_angel])
+        state = state.flatten()
+        return state
 
     def reward(self):
         """
@@ -126,6 +129,7 @@ class simple_quad_model:
         """
         reward = -(0.1 * (np.square(self.angel_speed).sum() + np.square(self.liner_speed).sum()) + 0.2 * np.square(
             self.E_angel).sum())
+        print(reward)
         return reward
 
     def reinforce_step(self, F):
@@ -139,7 +143,8 @@ class simple_quad_model:
         self.liner, self.E_angel = self.sim_state()
         reward = self.reward()
         self.Time_counter += 1
-        if self.Time_counter % 1000 == 0:
+        # print(self.Time_counter)
+        if self.Time_counter % 500 == 0:
             done = True
         else:
             done = False
