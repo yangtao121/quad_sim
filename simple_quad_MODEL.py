@@ -26,6 +26,9 @@ class simple_quad_model:
 
         # self.input = np.zeros(4)  # 旋翼输入力
 
+        # 与强化学习相关
+        self.Time_counter = 0  # 时间计数器
+
     def virtual_control_U(self, F):
         """
         返回值说明：
@@ -98,9 +101,50 @@ class simple_quad_model:
         U = self.virtual_control_U(F)
         self.liner_speed, self.angel_speed = self.sim_speed(U)
         self.liner, self.E_angel = self.sim_state()
-        print(np.array([
-            self.liner_speed,
-            self.angel_speed,
-            self.liner,
-            self.E_angel
-        ]))
+        # print(np.array([
+        #     self.liner_speed,
+        #     self.angel_speed,
+        #     self.liner,
+        #     self.E_angel
+        # ]))
+
+    # 强化学习相关的函数
+    def reset(self):
+        """
+        获得一个不平衡状态
+        :return:
+        """
+        self.E_angel = np.random.uniform(0, np.pi / 3, 3)
+        self.angel_speed = np.random.uniform(-np.pi / 4, np.pi / 4, 3)
+        self.liner_speed = np.random.uniform(-5, 5, 3)
+
+    def reward(self):
+        """
+        奖励值的定义：
+        reward = -cost = -(k1*speed^2 + k2*angel^2)
+        :return: 返回奖励值
+        """
+        reward = -(0.1 * (np.square(self.angel_speed).sum() + np.square(self.liner_speed).sum()) + 0.2 * np.square(
+            self.E_angel).sum())
+        return reward
+
+    def reinforce_step(self, F):
+        """
+        为强化学习专门定制的step
+        :param F: 力的输入
+        :return: 返回线速度+角速度+欧拉角
+        """
+        U = self.virtual_control_U(F)
+        self.liner_speed, self.angel_speed = self.sim_speed(U)
+        self.liner, self.E_angel = self.sim_state()
+        reward = self.reward()
+        self.Time_counter += 1
+        if self.Time_counter % 1000 == 0:
+            done = True
+        else:
+            done = False
+
+        state = np.array([self.liner_speed, self.angel_speed, self.E_angel])
+        state = state.flatten()
+
+        return state, reward, done
