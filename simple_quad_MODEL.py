@@ -2,21 +2,25 @@ import numpy as np
 
 
 class simple_quad_model:
-    def __init__(self, m, g, I):
+    def __init__(self, m, g, I, l):
         """
 
         :param m: 无人机质量
         :param g: 重力加速度
         :param I: 转动惯量，为字典{'Ix','Iy','Iz'}
+        :param l: 翼到中心的距离
         """
         self.g = g
         self.m = m
 
         # self.B_angel = np.zeros(3)  # 相对于机体坐标系B的旋转角
         self.E_angel = np.zeros(3)  # 相对于绝对坐标系E的旋转角
-        self.E_angel[1] = np.pi/3
+        self.E_angel[1] = np.pi / 3
         self.I = I
+        self.l = l
 
+        self.line_speed = np.zeros(3)  # 线速度值
+        self.angel_speed = np.zeros(3)  # 角速度值
         # self.input = np.zeros(4)  # 旋翼输入力
 
     def virtual_control_U(self, F):
@@ -49,4 +53,12 @@ class simple_quad_model:
         acc[1] = (np.cos(self.E_angel[0]) * np.sin(self.E_angel[1]) * np.sin(self.E_angel[2]) - np.sin(
             self.E_angel[0]) * np.cos(self.E_angel[2])) * U[0] / self.m
         acc[2] = (np.cos(self.E_angel[1]) * np.cos(self.E_angel[0])) * U[0] / self.m - self.g
+        return acc
+
+    def angel_acceleration(self, U):
+        acc = np.zeros(3)
+        acc[0] = (self.angel_speed[1]*self.angel_speed[2]*(self.I['Iy']-self.I['Iz'])+self.l*U[1])/self.I['Ix']
+        acc[1] = (self.angel_speed[0]*self.angel_speed[2]*(self.I['Iz']-self.I['Ix'])+self.l*U[2])/self.I['Iy']
+        acc[2] = (self.angel_speed[0]*self.angel_speed[1]*(self.I['Ix']-self.I['Iy'])+U[3])/self.I['Iz']
+
         return acc
