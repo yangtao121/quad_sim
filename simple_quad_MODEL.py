@@ -73,4 +73,10 @@ class simple_quad_model:
         """
         acc_liner = self.liner_acceleration(U)
         acc_angel = self.angel_acceleration(U)
+        liner_speed = acc_liner*self.h + self.liner_speed
+        angel_speed = acc_angel*self.h + self.angel_speed
+
+        return liner_speed,liner_speed
+
+
 
