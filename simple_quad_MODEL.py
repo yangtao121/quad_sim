@@ -31,7 +31,7 @@ class simple_quad_model:
         U[2]俯仰控制量
         U[3]偏航控制量
         :param F: 输入的真实力
-        :return:
+        :return:虚拟输入量
         """
         U = np.zeros(4)
         U[0] = np.sum(F)
