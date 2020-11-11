@@ -2,13 +2,14 @@ import numpy as np
 
 
 class simple_quad_model:
-    def __init__(self, m, g, I, l):
+    def __init__(self, m, g, I, l, h):
         """
 
         :param m: 无人机质量
         :param g: 重力加速度
         :param I: 转动惯量，为字典{'Ix','Iy','Iz'}
         :param l: 翼到中心的距离
+        :param h: 仿真步长
         """
         self.g = g
         self.m = m
@@ -57,8 +58,19 @@ class simple_quad_model:
 
     def angel_acceleration(self, U):
         acc = np.zeros(3)
-        acc[0] = (self.angel_speed[1]*self.angel_speed[2]*(self.I['Iy']-self.I['Iz'])+self.l*U[1])/self.I['Ix']
-        acc[1] = (self.angel_speed[0]*self.angel_speed[2]*(self.I['Iz']-self.I['Ix'])+self.l*U[2])/self.I['Iy']
-        acc[2] = (self.angel_speed[0]*self.angel_speed[1]*(self.I['Ix']-self.I['Iy'])+U[3])/self.I['Iz']
+        acc[0] = (self.angel_speed[1] * self.angel_speed[2] * (self.I['Iy'] - self.I['Iz']) + self.l * U[1]) / self.I[
+            'Ix']
+        acc[1] = (self.angel_speed[0] * self.angel_speed[2] * (self.I['Iz'] - self.I['Ix']) + self.l * U[2]) / self.I[
+            'Iy']
+        acc[2] = (self.angel_speed[0] * self.angel_speed[1] * (self.I['Ix'] - self.I['Iy']) + U[3]) / self.I['Iz']
 
         return acc
+
+    def sim_speed(self, U):
+        """
+        获得当前状态的无人机速度，采用v = v0 + at公式，最简单仿真模式
+        :param U: 虚拟输入量
+        :return:
+        """
+        liner_acc = self.liner_acceleration(U)
+        angel_acc = self.angel_acceleration(U)
