@@ -1,8 +1,9 @@
 import numpy as np
+import Transform as tr
 
 
 class simple_quad_model:
-    def __init__(self, m, g, I, h, l):
+    def __init__(self, m, g, I, l, h=0.01):
         """
 
         :param m: 无人机质量
@@ -14,10 +15,11 @@ class simple_quad_model:
         self.g = g
         self.m = m
         self.l = l
+        self.h = h
 
         # self.B_angel = np.zeros(3)  # 相对于机体坐标系B的旋转角
         self.E_angel = np.zeros(3)  # 相对于绝对坐标系E的旋转角
-        self.E_angel[1] = np.pi/3
+        self.liner = np.zeros(3)  # 线位置
         self.I = I
         self.angel_speed = np.zeros(3)
         self.liner_speed = np.zeros(3)
@@ -39,6 +41,7 @@ class simple_quad_model:
         U[1] = F[3] - F[1]
         U[2] = F[3] - F[0]
         U[3] = F[1] + F[3] - F[2] - F[0]
+        # print(U)
         return U
 
     def liner_acceleration(self, U):
@@ -54,14 +57,17 @@ class simple_quad_model:
         acc[1] = (np.cos(self.E_angel[0]) * np.sin(self.E_angel[1]) * np.sin(self.E_angel[2]) - np.sin(
             self.E_angel[0]) * np.cos(self.E_angel[2])) * U[0] / self.m
         acc[2] = (np.cos(self.E_angel[1]) * np.cos(self.E_angel[0])) * U[0] / self.m - self.g
+        # print(acc)
         return acc
 
     def angel_acceleration(self, U):
         acc = np.zeros(3)
-        acc[0] = (self.angel_speed[1] * self.angel_speed[2] * (self.I['Iy'] - self.I['Iz']) + self.l * U[1]) / self.I['Ix']
-        acc[1] = (self.angel_speed[0] * self.angel_speed[2] * (self.I['Iz'] - self.I['Ix']) + self.l * U[2]) / self.I['Iy']
+        acc[0] = (self.angel_speed[1] * self.angel_speed[2] * (self.I['Iy'] - self.I['Iz']) + self.l * U[1]) / self.I[
+            'Ix']
+        acc[1] = (self.angel_speed[0] * self.angel_speed[2] * (self.I['Iz'] - self.I['Ix']) + self.l * U[2]) / self.I[
+            'Iy']
         acc[2] = (self.angel_speed[0] * self.angel_speed[1] * (self.I['Ix'] - self.I['Iy']) + U[3]) / self.I['Iz']
-
+        # print(acc)
         return acc
 
     def sim_speed(self, U):
@@ -72,14 +78,28 @@ class simple_quad_model:
         """
         acc_liner = self.liner_acceleration(U)
         acc_angel = self.angel_acceleration(U)
-        liner_speed = acc_liner*self.h + self.liner_speed
-        angel_speed = acc_angel*self.h + self.angel_speed
+        liner_speed = acc_liner * self.h + self.liner_speed
+        angel_speed = acc_angel * self.h + self.angel_speed
 
-        return liner_speed,liner_speed
+        return liner_speed, angel_speed
 
-    def sim_state(self, U):
+    def sim_state(self):
         """
-        
-        :param U:
-        :return:
+        p=p0+Vt
+        :return: liner, E_angel
         """
+        liner = self.liner + self.liner_speed * self.h
+        E_angel = self.E_angel + self.angel_speed * self.h
+        E_angel = tr.normalize_angle(E_angel)
+
+        return liner, E_angel
+
+    def step(self, U):
+        self.liner_speed, self.angel_speed = self.sim_speed(U)
+        self.liner, self.E_angel = self.sim_state()
+        print(np.array([
+            self.liner_speed,
+            self.angel_speed,
+            self.liner,
+            self.E_angel
+        ]))
