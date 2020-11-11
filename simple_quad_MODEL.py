@@ -94,7 +94,8 @@ class simple_quad_model:
 
         return liner, E_angel
 
-    def step(self, U):
+    def step(self, F):
+        U = self.virtual_control_U(F)
         self.liner_speed, self.angel_speed = self.sim_speed(U)
         self.liner, self.E_angel = self.sim_state()
         print(np.array([
