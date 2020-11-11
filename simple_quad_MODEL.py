@@ -64,12 +64,11 @@ class simple_quad_model:
 
         return acc
 
-
     def sim_speed(self, U):
         """
         使用最简单的仿真，V(t)=V0+at
         :param U: 虚拟输入量
-        :return:
+        :return: 返回i+1时刻的速度值
         """
         acc_liner = self.liner_acceleration(U)
         acc_angel = self.angel_acceleration(U)
@@ -78,5 +77,9 @@ class simple_quad_model:
 
         return liner_speed,liner_speed
 
-
-
+    def sim_state(self, U):
+        """
+        
+        :param U:
+        :return:
+        """
