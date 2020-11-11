@@ -2,26 +2,26 @@ import numpy as np
 
 
 class simple_quad_model:
-    def __init__(self, m, g, I, l, h):
+    def __init__(self, m, g, I, h, l):
         """
 
         :param m: 无人机质量
         :param g: 重力加速度
         :param I: 转动惯量，为字典{'Ix','Iy','Iz'}
-        :param l: 翼到中心的距离
         :param h: 仿真步长
+        :param l: 翼到中心的距离
         """
         self.g = g
         self.m = m
+        self.l = l
 
         # self.B_angel = np.zeros(3)  # 相对于机体坐标系B的旋转角
         self.E_angel = np.zeros(3)  # 相对于绝对坐标系E的旋转角
-        self.E_angel[1] = np.pi / 3
+        self.E_angel[1] = np.pi/3
         self.I = I
-        self.l = l
+        self.angel_speed = np.zeros(3)
+        self.liner_speed = np.zeros(3)
 
-        self.line_speed = np.zeros(3)  # 线速度值
-        self.angel_speed = np.zeros(3)  # 角速度值
         # self.input = np.zeros(4)  # 旋翼输入力
 
     def virtual_control_U(self, F):
@@ -32,7 +32,7 @@ class simple_quad_model:
         U[2]俯仰控制量
         U[3]偏航控制量
         :param F: 输入的真实力
-        :return:虚拟输入量
+        :return:
         """
         U = np.zeros(4)
         U[0] = np.sum(F)
@@ -58,19 +58,19 @@ class simple_quad_model:
 
     def angel_acceleration(self, U):
         acc = np.zeros(3)
-        acc[0] = (self.angel_speed[1] * self.angel_speed[2] * (self.I['Iy'] - self.I['Iz']) + self.l * U[1]) / self.I[
-            'Ix']
-        acc[1] = (self.angel_speed[0] * self.angel_speed[2] * (self.I['Iz'] - self.I['Ix']) + self.l * U[2]) / self.I[
-            'Iy']
+        acc[0] = (self.angel_speed[1] * self.angel_speed[2] * (self.I['Iy'] - self.I['Iz']) + self.l * U[1]) / self.I['Ix']
+        acc[1] = (self.angel_speed[0] * self.angel_speed[2] * (self.I['Iz'] - self.I['Ix']) + self.l * U[2]) / self.I['Iy']
         acc[2] = (self.angel_speed[0] * self.angel_speed[1] * (self.I['Ix'] - self.I['Iy']) + U[3]) / self.I['Iz']
 
         return acc
 
+
     def sim_speed(self, U):
         """
-        获得当前状态的无人机速度，采用v = v0 + at公式，最简单仿真模式
+        使用最简单的仿真，V(t)=V0+at
         :param U: 虚拟输入量
         :return:
         """
-        liner_acc = self.liner_acceleration(U)
-        angel_acc = self.angel_acceleration(U)
+        acc_liner = self.liner_acceleration(U)
+        acc_angel = self.angel_acceleration(U)
+
