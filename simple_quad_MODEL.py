@@ -60,6 +60,7 @@ class simple_quad_model:
         acc[1] = (np.cos(self.E_angel[0]) * np.sin(self.E_angel[1]) * np.sin(self.E_angel[2]) - np.sin(
             self.E_angel[0]) * np.cos(self.E_angel[2])) * U[0] / self.m
         acc[2] = (np.cos(self.E_angel[1]) * np.cos(self.E_angel[0])) * U[0] / self.m - self.g
+
         # print(acc)
         return acc
 
@@ -84,6 +85,8 @@ class simple_quad_model:
         liner_speed = acc_liner * self.h + self.liner_speed
         angel_speed = acc_angel * self.h + self.angel_speed
 
+        liner_speed = np.clip(0, 12, liner_speed)
+
         return liner_speed, angel_speed
 
     def sim_state(self):
@@ -93,7 +96,9 @@ class simple_quad_model:
         """
         liner = self.liner + self.liner_speed * self.h
         E_angel = self.E_angel + self.angel_speed * self.h
-        E_angel = tr.normalize_angle(E_angel)
+        # E_angel = tr.normalize_angle(E_angel)
+
+        E_angel = np.clip(-0.8, 0.8,E_angel)
 
         return liner, E_angel
 
@@ -114,10 +119,10 @@ class simple_quad_model:
         获得一个不平衡状态
         :return:
         """
-        self.E_angel = np.random.uniform(0, np.pi / 3, 3)
+        self.E_angel = np.random.uniform(-0.5, 0.5, 3)
         self.angel_speed = np.random.uniform(-np.pi / 4, np.pi / 4, 3)
         self.liner_speed = np.random.uniform(-5, 5, 3)
-        state = np.array([self.liner_speed,self.angel_speed,self.E_angel])
+        state = np.array([self.liner_speed, self.angel_speed, self.E_angel])
         state = state.flatten()
         return state
 
@@ -129,7 +134,7 @@ class simple_quad_model:
         """
         reward = -(0.1 * (np.square(self.angel_speed).sum() + np.square(self.liner_speed).sum()) + 0.2 * np.square(
             self.E_angel).sum())
-        print(reward)
+        # print(reward)
         return reward
 
     def reinforce_step(self, F):

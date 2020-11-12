@@ -9,8 +9,8 @@ env = quad_model(0.9, 10, I, 0.175)
 
 s_dims = 9
 a_dims = 4
-upper_bound = 20
-lower_bound = -20
+upper_bound = 6.575
+lower_bound = 0
 
 total_episodes = 1500
 
@@ -24,6 +24,7 @@ for ep in range(total_episodes):
     episodic_reward = 0
     step = 0
     episode_state = []
+    episode_action = []
 
     while step < 1500:
         tf_pre_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
@@ -31,6 +32,7 @@ for ep in range(total_episodes):
         # print(action)
         state, reward, done = env.reinforce_step(action)
         episode_state.append(state)
+        episode_action.append(action)
 
         # print(state)
 
@@ -55,6 +57,7 @@ for ep in range(total_episodes):
 
     # 画图
     episode_state = np.array(episode_state)
+    episode_action = np.array(episode_action)
     plt.subplot(121)
     plt.plot(episode_state[:, 0], 'b')
     plt.plot(episode_state[:, 1], 'g')
@@ -63,8 +66,13 @@ for ep in range(total_episodes):
     plt.plot(episode_state[:, 3], 'b')
     plt.plot(episode_state[:, 4], 'g')
     plt.plot(episode_state[:, 5], 'r')
+    plt.subplot(223)
+    plt.plot(episode_action[:, 0])
+    plt.plot(episode_action[:, 1], 'b')
+    plt.plot(episode_action[:, 2], 'g')
+    plt.plot(episode_action[:, 3], 'r')
     fig_num += 1
-    filename = str(fig_num) + ".jpg"
+    filename = "/fig/" + str(fig_num) + ".jpg"
     plt.savefig(filename)
     plt.close()
     # plt.show()
