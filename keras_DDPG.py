@@ -163,8 +163,16 @@ class DDPG:
         return no
 
     def save_model(self):
-        self.online_actor.save_weights("pendulum_online_actor.h5")
-        self.online_critic.save_weights("pendulum_online_critic.h5")
+        self.online_actor.save_weights("online_actor.h5")
+        self.online_critic.save_weights("online_critic.h5")
 
-        self.target_actor.save_weights("pendulum_target_actor.h5")
-        self.target_critic.save_weights("pendulum_target_critic.h5")
+        self.target_actor.save_weights("target_actor.h5")
+        self.target_critic.save_weights("target_critic.h5")
+
+    def load_weight(self):
+        self.online_actor.load_weights("online_actor.h5")
+        self.online_critic.load_weights("online_critic.h5")
+
+        self.target_actor.load_weights("target_actor.h5")
+        self.target_critic.load_weights("target_critic.h5")
+
