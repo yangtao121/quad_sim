@@ -152,6 +152,9 @@ class simple_quad_model:
         # print(reward)
         return reward
 
+    def reward_v2(self):
+        pass
+
     def reinforce_step(self, F):
         """
         为强化学习专门定制的step

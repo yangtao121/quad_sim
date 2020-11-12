@@ -9,8 +9,8 @@ class DDPG:
                  lower_bound,
                  s_dims, a_dims,
                  soft_update_tau=0.01,
-                 critic_lr=0.002,
-                 actor_lr=0.001,
+                 critic_lr=0.008,
+                 actor_lr=0.004,
                  gamma=0.99,
                  store_capacity=50000,
                  batch_size=64):
@@ -175,4 +175,5 @@ class DDPG:
 
         self.target_actor.load_weights("target_actor.h5")
         self.target_critic.load_weights("target_critic.h5")
+        print("load weight")
 

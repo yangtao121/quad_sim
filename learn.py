@@ -7,7 +7,7 @@ from tqdm import tqdm
 from simple_quad_MODEL import simple_quad_model as quad_model
 
 I = {'Ix': 8.276e-3, 'Iy': 8.276e-3, 'Iz': 1.612e-2}
-h = 0.02
+h = 0.05
 env = quad_model(0.9, 10, I, 0.175, h)
 
 s_dims = 9
@@ -18,7 +18,7 @@ lower_bound = 0
 total_episodes = 300
 
 RL = DDPG(upper_bound, lower_bound, s_dims, a_dims)
-RL.load_weight()
+# RL.load_weight()
 
 ep_reward_list = []
 avg_reward_list = []
