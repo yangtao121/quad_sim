@@ -84,8 +84,10 @@ class simple_quad_model:
         acc_angel = self.angel_acceleration(U)
         liner_speed = acc_liner * self.h + self.liner_speed
         angel_speed = acc_angel * self.h + self.angel_speed
+        # print(angel_speed)
 
         liner_speed = np.clip(0, 12, liner_speed)
+        angel_speed = np.clip(-np.pi / 3, np.pi / 3, angel_speed)
 
         return liner_speed, angel_speed
 
@@ -98,7 +100,7 @@ class simple_quad_model:
         E_angel = self.E_angel + self.angel_speed * self.h
         # E_angel = tr.normalize_angle(E_angel)
 
-        E_angel = np.clip(-0.8, 0.8,E_angel)
+        E_angel = np.clip(-0.8, 0.8, E_angel)
 
         return liner, E_angel
 
@@ -126,6 +128,19 @@ class simple_quad_model:
         state = state.flatten()
         return state
 
+    def reset_simple(self):
+        """
+        简单级别的稳定训练
+        :return:
+        """
+        self.E_angel = np.zeros(3)  # 相对于绝对坐标系E的旋转角
+        self.angel_speed = np.zeros(3)
+        self.liner_speed = np.zeros(3)
+        state = np.array([self.liner_speed, self.angel_speed, self.E_angel])
+        state = state.flatten()
+
+        return state
+
     def reward(self):
         """
         奖励值的定义：
@@ -149,7 +164,7 @@ class simple_quad_model:
         reward = self.reward()
         self.Time_counter += 1
         # print(self.Time_counter)
-        if self.Time_counter % 500 == 0:
+        if self.Time_counter % 100 == 0:
             done = True
         else:
             done = False

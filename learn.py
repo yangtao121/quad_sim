@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras_DDPG import DDPG
+from time import sleep
+from tqdm import tqdm
 from simple_quad_MODEL import simple_quad_model as quad_model
 
 I = {'Ix': 8.276e-3, 'Iy': 8.276e-3, 'Iz': 1.612e-2}
@@ -20,13 +22,14 @@ ep_reward_list = []
 avg_reward_list = []
 fig_num = 0
 for ep in range(total_episodes):
-    prev_state = env.reset()
+    prev_state = env.reset_simple()
     episodic_reward = 0
     step = 0
     episode_state = []
     episode_action = []
 
-    while step < 1500:
+    for step in tqdm(range(100)):
+    # for step in range(100):
         tf_pre_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
         action = RL.action_policy(tf_pre_state)
         # print(action)
@@ -44,10 +47,11 @@ for ep in range(total_episodes):
 
         step += 1
 
-        if done:
-            break
+        # if done:
+        #     break
 
         prev_state = state
+        sleep(0.001)
 
     ep_reward_list.append(episodic_reward)
     avg_reward = np.mean(ep_reward_list[-step:])
@@ -58,21 +62,20 @@ for ep in range(total_episodes):
     # 画图
     episode_state = np.array(episode_state)
     episode_action = np.array(episode_action)
-    plt.subplot(121)
+    plt.subplot(221)
     plt.plot(episode_state[:, 0], 'b')
     plt.plot(episode_state[:, 1], 'g')
     plt.plot(episode_state[:, 2], 'r')
-    plt.subplot(122)
+    plt.subplot(222)
     plt.plot(episode_state[:, 3], 'b')
     plt.plot(episode_state[:, 4], 'g')
     plt.plot(episode_state[:, 5], 'r')
     plt.subplot(223)
-    plt.plot(episode_action[:, 0])
-    plt.plot(episode_action[:, 1], 'b')
-    plt.plot(episode_action[:, 2], 'g')
-    plt.plot(episode_action[:, 3], 'r')
+    plt.plot(episode_state[:, 6], 'b')
+    plt.plot(episode_state[:, 7], 'g')
+    plt.plot(episode_state[:, 8], 'r')
     fig_num += 1
-    filename = "/fig/" + str(fig_num) + ".jpg"
+    filename = "fig/" + str(fig_num) + ".jpg"
     plt.savefig(filename)
     plt.close()
     # plt.show()
