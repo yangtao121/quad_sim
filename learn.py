@@ -7,14 +7,15 @@ from tqdm import tqdm
 from simple_quad_MODEL import simple_quad_model as quad_model
 
 I = {'Ix': 8.276e-3, 'Iy': 8.276e-3, 'Iz': 1.612e-2}
-env = quad_model(0.9, 10, I, 0.175)
+h = 0.02
+env = quad_model(0.9, 10, I, 0.175, h)
 
 s_dims = 9
 a_dims = 4
 upper_bound = 6.575
 lower_bound = 0
 
-total_episodes = 1500
+total_episodes = 300
 
 RL = DDPG(upper_bound, lower_bound, s_dims, a_dims)
 
@@ -29,7 +30,7 @@ for ep in range(total_episodes):
     episode_action = []
 
     for step in tqdm(range(100)):
-    # for step in range(100):
+        # for step in range(100):
         tf_pre_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
         action = RL.action_policy(tf_pre_state)
         # print(action)
@@ -51,7 +52,7 @@ for ep in range(total_episodes):
         #     break
 
         prev_state = state
-        sleep(0.001)
+        sleep(1e-10)
 
     ep_reward_list.append(episodic_reward)
     avg_reward = np.mean(ep_reward_list[-step:])
@@ -74,6 +75,11 @@ for ep in range(total_episodes):
     plt.plot(episode_state[:, 6], 'b')
     plt.plot(episode_state[:, 7], 'g')
     plt.plot(episode_state[:, 8], 'r')
+    plt.subplot(224)
+    plt.plot(episode_action[:, 0], 'b')
+    plt.plot(episode_action[:, 1], 'g')
+    plt.plot(episode_action[:, 2], 'r')
+    plt.plot(episode_action[:, 3], 'y')
     fig_num += 1
     filename = "fig/" + str(fig_num) + ".jpg"
     plt.savefig(filename)

@@ -84,10 +84,10 @@ class simple_quad_model:
         acc_angel = self.angel_acceleration(U)
         liner_speed = acc_liner * self.h + self.liner_speed
         angel_speed = acc_angel * self.h + self.angel_speed
-        # print(angel_speed)
 
-        liner_speed = np.clip(0, 12, liner_speed)
-        angel_speed = np.clip(-np.pi / 3, np.pi / 3, angel_speed)
+        liner_speed = np.clip(liner_speed,-12,12)
+        angel_speed = np.clip(angel_speed,-np.pi / 3, np.pi / 3)
+        # print(angel_speed)
 
         return liner_speed, angel_speed
 
@@ -100,7 +100,7 @@ class simple_quad_model:
         E_angel = self.E_angel + self.angel_speed * self.h
         # E_angel = tr.normalize_angle(E_angel)
 
-        E_angel = np.clip(-0.8, 0.8, E_angel)
+        E_angel = np.clip(E_angel,-0.8, 0.8)
 
         return liner, E_angel
 
@@ -147,7 +147,7 @@ class simple_quad_model:
         reward = -cost = -(k1*speed^2 + k2*angel^2)
         :return: 返回奖励值
         """
-        reward = -(0.1 * (np.square(self.angel_speed).sum() + np.square(self.liner_speed).sum()) + 0.2 * np.square(
+        reward = -(0.08 * (np.square(self.angel_speed).sum() + np.square(self.liner_speed).sum()) + 3 * np.square(
             self.E_angel).sum())
         # print(reward)
         return reward
