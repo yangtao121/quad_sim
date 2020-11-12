@@ -18,6 +18,7 @@ lower_bound = 0
 total_episodes = 300
 
 RL = DDPG(upper_bound, lower_bound, s_dims, a_dims)
+RL.load_weight()
 
 ep_reward_list = []
 avg_reward_list = []
