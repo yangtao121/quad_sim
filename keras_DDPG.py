@@ -9,8 +9,8 @@ class DDPG:
                  lower_bound,
                  s_dims, a_dims,
                  soft_update_tau=0.01,
-                 critic_lr=0.008,
-                 actor_lr=0.004,
+                 critic_lr=0.002,
+                 actor_lr=0.001,
                  gamma=0.99,
                  store_capacity=50000,
                  batch_size=64):
@@ -65,6 +65,7 @@ class DDPG:
         out = layers.BatchNormalization()(out)
         out = layers.Dense(256, activation="relu")(out)
         out = layers.BatchNormalization()(out)
+        out = layers.Dropout(0.1)(out)
         outputs = layers.Dense(self.a_dims, activation="tanh", kernel_initializer=last_init)(out)
 
         outputs = outputs * self.upper_bound
@@ -91,6 +92,7 @@ class DDPG:
         out = layers.Dense(256, activation="relu")(concat)
         out = layers.BatchNormalization()(out)
         out = layers.Dense(256, activation="relu")(out)
+        out = layers.Dropout(0.1)(out)
         outputs = layers.Dense(1)(out)
 
         model = keras.Model([state_input, action_input], outputs)

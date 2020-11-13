@@ -7,7 +7,7 @@ from tqdm import tqdm
 from simple_quad_MODEL import simple_quad_model as quad_model
 
 I = {'Ix': 8.276e-3, 'Iy': 8.276e-3, 'Iz': 1.612e-2}
-h = 0.05
+h = 0.02
 env = quad_model(0.9, 10, I, 0.175, h)
 
 s_dims = 9
@@ -15,7 +15,7 @@ a_dims = 4
 upper_bound = 6.575
 lower_bound = 0
 
-total_episodes = 300
+total_episodes = 200
 
 RL = DDPG(upper_bound, lower_bound, s_dims, a_dims)
 # RL.load_weight()
@@ -57,7 +57,7 @@ for ep in range(total_episodes):
 
     ep_reward_list.append(episodic_reward)
     avg_reward = np.mean(ep_reward_list[-step:])
-    print("Episode * {} * Avg Reward is ==> {}".format(ep, avg_reward))
+    print("Episode * {} *  Reward is ==> {}".format(ep, episodic_reward))
     # print(step)
     avg_reward_list.append(avg_reward)
 

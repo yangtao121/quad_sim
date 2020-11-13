@@ -153,7 +153,8 @@ class simple_quad_model:
         return reward
 
     def reward_v2(self):
-        pass
+        reward = -(0*np.linalg.norm(self.E_angel,ord=2)+0.1*np.linalg.norm(self.angel_speed,ord=2)+0.125*np.linalg.norm(self.liner_speed,ord=2))
+        return reward
 
     def reinforce_step(self, F):
         """
@@ -164,7 +165,7 @@ class simple_quad_model:
         U = self.virtual_control_U(F)
         self.liner_speed, self.angel_speed = self.sim_speed(U)
         self.liner, self.E_angel = self.sim_state()
-        reward = self.reward()
+        reward = self.reward_v2()
         self.Time_counter += 1
         # print(self.Time_counter)
         if self.Time_counter % 100 == 0:
