@@ -153,7 +153,7 @@ class simple_quad_model:
         return reward
 
     def reward_v2(self):
-        reward = -(0*np.linalg.norm(self.E_angel,ord=2)+0.1*np.linalg.norm(self.angel_speed,ord=2)+0.125*np.linalg.norm(self.liner_speed,ord=2))
+        reward = -(np.linalg.norm(self.E_angel,ord=2)+0.1*np.linalg.norm(self.angel_speed,ord=2)+0.125*np.linalg.norm(self.liner_speed,ord=2))
         return reward
 
     def reinforce_step(self, F):

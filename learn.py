@@ -16,6 +16,7 @@ upper_bound = 6.575
 lower_bound = 0
 
 total_episodes = 200
+ep = 0
 
 RL = DDPG(upper_bound, lower_bound, s_dims, a_dims)
 # RL.load_weight()
@@ -23,8 +24,8 @@ RL = DDPG(upper_bound, lower_bound, s_dims, a_dims)
 ep_reward_list = []
 avg_reward_list = []
 fig_num = 0
-for ep in range(total_episodes):
-    prev_state = env.reset_simple()
+while True:
+    prev_state = env.reset()
     episodic_reward = 0
     step = 0
     episode_state = []
@@ -85,6 +86,14 @@ for ep in range(total_episodes):
     filename = "fig/" + str(fig_num) + ".jpg"
     plt.savefig(filename)
     plt.close()
+    ep += 1
+    if ep%100 == 0 :
+        RL.save_model()
+        plt.plot(avg_reward_list)
+        plt.xlabel("Episode")
+        plt.ylabel("Avg. Epsiodic Reward")
+        filename = "reward/"+str(ep)+".jpg"
+        plt.savefig(filename)
     # plt.show()
 
 RL.save_model()
